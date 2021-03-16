@@ -4,6 +4,14 @@ if __name__=="__main__":
     print("FATAL   : Run this bot from right way.")
     sys.exit(1)
 
+def group(number):
+    s = '%d' % number
+    groups = []
+    while s and s[-1].isdigit():
+        groups.append(s[-3:])
+        s = s[:-3]
+    return s + ','.join(reversed(groups))
+
 def estimate(cnt, gems_preowned=0):
     gems = cnt * 160 # 필요한 원석 수 계산
     gems -= gems_preowned # 이미 갖고 있는 원석 수가 기입된 경우 추가
@@ -91,7 +99,7 @@ def estimate(cnt, gems_preowned=0):
     text+= "창세의 결정 330개(300+30개, 5900원) : " + str(crs_1) + "개 (" + str(crm_1) + "원)\n"
     text+= "창세의 결정 60개(1200원) : " + str(crs_0) + "개 (" + str(crm_0) + "원)```"
     embed.add_field(name="상세 정보", value=text, inline=False)
-    embed.add_field(name="총 소모 금액", value=str(crm_0 + crm_1 + crm_2 + crm_3 + crm_4 + crm_5) + "원", inline=True)
+    embed.add_field(name="총 소모 금액", value="**" + group(crm_0 + crm_1 + crm_2 + crm_3 + crm_4 + crm_5) + "원**", inline=True)
     embed.add_field(name="구매한 창세의 결정 수", value=str(crystals), inline=True)
     embed.add_field(name="잉여 원석 / 결정 수", value=str(gems)[1:] + "개", inline=True)
     return embed

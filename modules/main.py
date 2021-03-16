@@ -1,10 +1,10 @@
 import sys, os, discord, configparser, logging
-import m_gacha_pull, m_help, m_estimate
+import m_gacha_pull, m_help, m_estimate, m_search
 sys.path.append('../gacha_data/')
 import pickup_character, pickup_weapon, anytime
 sys.path.append('../')
 
-bot_ver = "0.20"
+bot_ver = "0.30"
 
 print("INFO    : Klee Discord bot, version " + bot_ver)
 print("INFO    : Pickup character data : " + pickup_character.data_name + " (ver " + pickup_character.data_ver + ")")
@@ -118,25 +118,25 @@ async def on_message(message):
         await message.channel.send(file=discord.File("result.txt"))
         os.remove("result.txt")
     elif message.content == "!천장":
-        await message.channel.trigger_typing()
-        rest = ""
-        while True:
-            resi = m_gacha_pull.pull(db, message)
-            resc = m_gacha_pull.descript_pull(resi)
-            rest += str(m_gacha_pull.get_stat(db, message)[0]) + "회차 : " + resc + "\n"
-            if db.get(str(message.author.id), "gacha_mode") != "3":
+        if db.get(str(message.author.id), "gacha_mode") != "3":
+            await message.channel.trigger_typing()
+            rest = ""
+            while True:
+                resi = m_gacha_pull.pull(db, message)
+                resc = m_gacha_pull.descript_pull(resi)
+                rest += str(m_gacha_pull.get_stat(db, message)[0]) + "회차 : " + resc + "\n"
                 if resi[0] == 5 and resi[3]:
                     break
-            else:
-                if resi[0] == 5 and resi[1] == 'character':
-                    break
-        pf = open("result.txt", "w")
-        pf.write(rest)
-        pf.close()
-        embed=discord.Embed(title=str(m_gacha_pull.get_stat(db, message)[0]) + "회차에 " + resi[2] + "이(가) 뽑혔어!", description="상세 과정은 파일을 참조해줘!", color=0xffff00)
-        await message.channel.send(embed=embed)
-        await message.channel.send(file=discord.File("result.txt"))
-        os.remove("result.txt")
+            pf = open("result.txt", "w")
+            pf.write(rest)
+            pf.close()
+            embed=discord.Embed(title=str(m_gacha_pull.get_stat(db, message)[0]) + "회차에 " + resi[2] + "이(가) 뽑혔어!", description="상세 과정은 파일을 참조해줘!", color=0xffff00)
+            await message.channel.send(embed=embed)
+            await message.channel.send(file=discord.File("result.txt"))
+            os.remove("result.txt")
+        else:
+            embed = discord.Embed(title="상시 기원에서는 '!5성' 또는 '!반천장'을 대신 사용해줘!")
+            await message.channel.send(embed=embed)
     elif message.content == "!통계":
         gm = db.get(str(message.author.id), "gacha_mode")
         stat = m_gacha_pull.get_stat(db, message)
@@ -187,6 +187,49 @@ async def on_message(message):
                 except:
                     embed=discord.Embed(title="사용 방법 : !견적 (보유중인 원석 개수) / !견적")
         await message.channel.send(embed=embed)
+    elif message.content.startswith("!저격"):
+        m = message.content.replace("!저격 ", "")
+        if m_search.search(db, message, m):
+            await message.channel.trigger_typing()
+            rest = ""
+            while True:
+                resi = m_gacha_pull.pull(db, message)
+                resc = m_gacha_pull.descript_pull(resi)
+                rest += str(m_gacha_pull.get_stat(db, message)[0]) + "회차 : " + resc + "\n"
+                if resi[0] == 5 and resi[2] == m:
+                    break
+            pf = open("result.txt", "w")
+            pf.write(rest)
+            pf.close()
+            embed=discord.Embed(title=str(m_gacha_pull.get_stat(db, message)[0]) + "회차에 " + resi[2] + "이(가) 뽑혔어!", description="상세 과정은 파일을 참조해줘!", color=0xffff00)
+            await message.channel.send(embed=embed)
+            await message.channel.send(file=discord.File("result.txt"))
+        else:
+            embed = discord.Embed(title="어떤 항목이었더라? 클레는 모르겠어...")
+            await message.channel.send(embed=embed)
+    elif message.content.startswith("!풀돌"):
+        m = message.content.replace("!풀돌 ", "")
+        if m_search.search(db, message, m):
+            await message.channel.trigger_typing()
+            ix = 0
+            rest = ""
+            while True:
+                resi = m_gacha_pull.pull(db, message)
+                resc = m_gacha_pull.descript_pull(resi)
+                rest += str(m_gacha_pull.get_stat(db, message)[0]) + "회차 : " + resc + "\n"
+                if resi[0] == 5 and resi[2] == m:
+                    ix += 1
+                    if ix == 7:
+                        break
+            pf = open("result.txt", "w")
+            pf.write(rest)
+            pf.close()
+            embed=discord.Embed(title=str(m_gacha_pull.get_stat(db, message)[0]) + "회차를 끝으로 풀돌을 성공했어!", description="상세 과정은 파일을 참조해줘!", color=0xffff00)
+            await message.channel.send(embed=embed)
+            await message.channel.send(file=discord.File("result.txt"))
+        else:
+            embed = discord.Embed(title="어떤 항목이었더라? 클레는 모르겠어...")
+            await message.channel.send(embed=embed)
     with open(db_path, 'w') as configfile:
         db.write(configfile)
 
