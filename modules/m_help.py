@@ -17,7 +17,7 @@ def help(bot_ver):
     embed.add_field(name="!5성 / !반천장", value="5성 항목이 나올 때까지 뽑기를 진행합니다.", inline=False)
     embed.add_field(name="!천장", value="5성 확률 UP 항목이 나올 때까지 뽑기를 진행합니다.\n확률 UP 항목이 없는 상시 기원에서는 5성 캐릭터가 나올 때까지 뽑기를 진행합니다.", inline=False)
     embed.add_field(name="!통계", value="저장된 통계를 표시합니다.", inline=False)
-    #embed.add_field(name="!견적", value="저장된 통계를 이용해 과금 견적서를 작성합니다.", inline=False)
+    embed.add_field(name="!견적 / !견적 (보유중인 원석 개수)", value="저장된 통계를 이용해 과금 견적서를 작성합니다.", inline=False)
     embed.add_field(name="!리셋", value="통계를 초기화합니다.", inline=False)
     embed.set_footer(text=copyright_text + ' | ver ' + bot_ver)
     return embed

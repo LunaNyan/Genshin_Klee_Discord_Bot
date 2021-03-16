@@ -120,8 +120,9 @@ def pull(db, message):
     # 천장 관련 변수
     stack_5star_pull = int(db.get(str(message.author.id), "stack_5star_pull_" + db.get(str(message.author.id), "gacha_mode"))) # 5성 천장
     stack_4star_pull = int(db.get(str(message.author.id), "stack_4star_pull_" + db.get(str(message.author.id), "gacha_mode"))) # 4성 천장
-    stack_5star_nothope = int(db.get(str(message.author.id), "stack_5star_nothope_" + db.get(str(message.author.id), "gacha_mode"))) # 5성 반천장 여부
-    stack_4star_nothope = int(db.get(str(message.author.id), "stack_4star_nothope_" + db.get(str(message.author.id), "gacha_mode"))) # 4성 반천장 여부
+    if db.get(str(message.author.id), "gacha_mode") != "3":
+        stack_5star_nothope = int(db.get(str(message.author.id), "stack_5star_nothope_" + db.get(str(message.author.id), "gacha_mode"))) # 5성 반천장 여부
+        stack_4star_nothope = int(db.get(str(message.author.id), "stack_4star_nothope_" + db.get(str(message.author.id), "gacha_mode"))) # 4성 반천장 여부
     # 유저 통계 관련 변수
     total_pull = int(db.get(str(message.author.id), "total_pull_" + db.get(str(message.author.id), "gacha_mode"))) # 회차
     total_5star = int(db.get(str(message.author.id), "total_5star_" + db.get(str(message.author.id), "gacha_mode"))) # 5성 획득 횟수
@@ -130,7 +131,10 @@ def pull(db, message):
     total_character = int(db.get(str(message.author.id), "total_character_" + db.get(str(message.author.id), "gacha_mode"))) # 캐릭터 획득 횟수
     total_item = int(db.get(str(message.author.id), "total_item_" + db.get(str(message.author.id), "gacha_mode"))) # 무기 획득 횟수
     # 가챠 처리 시작
-    res = pull_calc(db, message, gacha_data, stack_5star_pull, stack_4star_pull, stack_5star_nothope, stack_4star_nothope)
+    if db.get(str(message.author.id), "gacha_mode") != "3":
+        res = pull_calc(db, message, gacha_data, stack_5star_pull, stack_4star_pull, stack_5star_nothope, stack_4star_nothope)
+    else:
+        res = pull_calc(db, message, gacha_data, stack_5star_pull, stack_4star_pull, 0, 0)
     # 반천장 여부 작성
     if res[0][0] == 5:
         db.set(str(message.author.id), "stack_5star_nothope_" + db.get(str(message.author.id), "gacha_mode"), str(res[1]))

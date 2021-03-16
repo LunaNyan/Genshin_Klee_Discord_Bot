@@ -1,10 +1,10 @@
 import sys, os, discord, configparser, logging
-import m_gacha_pull, m_help
+import m_gacha_pull, m_help, m_estimate
 sys.path.append('../gacha_data/')
 import pickup_character, pickup_weapon, anytime
 sys.path.append('../')
 
-bot_ver = "0.10"
+bot_ver = "0.20"
 
 print("INFO    : Klee Discord bot, version " + bot_ver)
 print("INFO    : Pickup character data : " + pickup_character.data_name + " (ver " + pickup_character.data_ver + ")")
@@ -170,6 +170,22 @@ async def on_message(message):
         db.set(str(message.author.id), "total_character_" + str(gm), "0")
         db.set(str(message.author.id), "total_item_" + str(gm), "0")
         embed = discord.Embed(title="선택된 기원의 통계를 초기화했어!")
+        await message.channel.send(embed=embed)
+    elif message.content.startswith("!견적"):
+        gm = db.get(str(message.author.id), "gacha_mode")
+        cnt = int(db.get(str(message.author.id), "total_pull_" + str(gm)))
+        if cnt == 0:
+            embed=discord.Embed(title="먼저 시뮬레이션을 돌려서 통계를 만들어줘!")
+        else:
+            if message.content == "!견적":
+                embed=m_estimate.estimate(cnt)
+            else:
+                m = message.content.replace("!견적 ", "")
+                try:
+                    m = int(m)
+                    embed=m_estimate.estimate(cnt, m)
+                except:
+                    embed=discord.Embed(title="사용 방법 : !견적 (보유중인 원석 개수) / !견적")
         await message.channel.send(embed=embed)
     with open(db_path, 'w') as configfile:
         db.write(configfile)
