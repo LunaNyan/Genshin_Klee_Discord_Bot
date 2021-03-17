@@ -9,12 +9,12 @@ if __name__=="__main__":
     sys.exit(1)
 
 data_name = "신의 주조"
-data_ver = "2021031501"
+data_ver = "2021031701"
 
 # 5성 확률UP 항목
 l_5star_up = [
-                [5, 'item', '호마의 지팡이', True],
-                [5, 'item', '늑대의 말로', True]
+                [5, 'item', '종말 탄식의 노래', True],
+                [5, 'item', '천공의 검', True]
              ]
 
 # 5성 일반 확률 항목
@@ -25,18 +25,18 @@ l_5star_std = [
                 [5, 'item', '천공의 두루마리', False],
                 [5, 'item', '화박연', False],
                 [5, 'item', '천공의 마루', False],
+                [5, 'item', '늑대의 말로', False],
                 [5, 'item', '천공의 긍지', False],
-                [5, 'item', '천공의 검', False],
                 [5, 'item', '매의 검', False]
             ]
 
 # 4성 확률 UP 항목
 l_4star_up = [
-                [4, 'item', '제례활', True],
-                [4, 'item', '음유시인의 악장', True],
-                [4, 'item', '천암장창', True],
-                [4, 'item', '천암고검', True],
-                [4, 'item', '용의 포효', True]
+                [4, 'item', '페보니우스 활', True],
+                [4, 'item', '뒷골목의 술과 시', True],
+                [4, 'item', '용학살창', True],
+                [4, 'item', '페보니우스 대검', True],
+                [4, 'item', '뒷골목의 섬광', True]
            ]
 
 # 4성 일반 확률 항목
@@ -55,17 +55,17 @@ l_4star_std = [
                 [4, 'character', '레이저', False],
                 [4, 'character', '바바라', False],
                 [4, 'item', '녹슨 활', False],
+                [4, 'item', '제례활', False],
                 [4, 'item', '절현', False],
-                [4, 'item', '페보니우스 활', False],
                 [4, 'item', '소심', False],
                 [4, 'item', '제례의 악장', False],
+                [4, 'item', '음유시인의 악장', False],
                 [4, 'item', '페보니우스 비전', False],
                 [4, 'item', '페보니우스 장창', False],
-                [4, 'item', '용학살창', False],
                 [4, 'item', '빗물 베기', False],
                 [4, 'item', '제례 대검', False],
                 [4, 'item', '시간의 검', False],
-                [4, 'item', '페보니우스 대검', False],
+                [4, 'item', '용의 포효', False],
                 [4, 'item', '제례검', False],
                 [4, 'item', '피리검', False],
                 [4, 'item', '페보니우스 검', False]
