@@ -8,12 +8,12 @@ if __name__=="__main__":
     print("FATAL   : Run this bot from right way.")
     sys.exit(1)
 
-data_name = "잔에 담긴 시"
-data_ver = "2021031701"
+data_name = "겨울 나라와의 이별"
+data_ver = "2021040601"
 
 # 5성 확률UP 항목
 l_5star_up = [
-                [5, 'character', '벤티', True]
+                [5, 'character', '타르탈리아', True]
              ]
 
 # 5성 일반 확률 항목
@@ -27,22 +27,24 @@ l_5star_std = [
 
 # 4성 확률 UP 항목
 l_4star_up = [
-                [4, 'character', '설탕', True],
-                [4, 'character', '노엘', True],
-                [4, 'character', '레이저', True],
+                [4, 'character', '로자리아', True],
+                [4, 'character', '피슬', True],
+                [4, 'character', '바바라', True],
            ]
 
 # 4성 일반 확률 항목
 l_4star_std = [
                 [4, 'character', '신염', False],
+                [4, 'character', '설탕', False],
                 [4, 'character', '디오나', False],
                 [4, 'character', '중운', False],
+                [4, 'character', '노엘', False],
                 [4, 'character', '베넷', False],
-                [4, 'character', '피슬', False],
                 [4, 'character', '응광', False],
                 [4, 'character', '북두', False],
                 [4, 'character', '행추', False],
                 [4, 'character', '향릉', False],
+                [4, 'character', '레이저', False],
                 [4, 'item', '녹슨 활', False],
                 [4, 'item', '제례활', False],
                 [4, 'item', '절현', False],

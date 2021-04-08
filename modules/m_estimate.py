@@ -88,10 +88,14 @@ def estimate(cnt, gems_preowned=0):
     crm_3 = crs_3 * 37000 # 창세의 결정 2240개(1980+260개, 37000원)
     crm_4 = crs_4 * 65000 # 창세의 결정 3880개(3280+600개, 65000원)
     crm_5 = crs_5 * 119000 # 창세의 결정 8080개(6480+1600개, 119000원)
+    if crystals + gems < 0:
+        req_gems = 0
+    else:
+        req_gems = crystals + gems
     # discord embed 처리
     embed = discord.Embed(title="견적서를 뽑아왔어!")
     embed.add_field(name="기원 횟수", value=str(cnt), inline=True)
-    embed.add_field(name="필요한 창세의 결정 수", value=str(crystals + gems), inline=True)
+    embed.add_field(name="필요한 창세의 결정 수", value=str(req_gems), inline=True)
     text = "```창세의 결정 8080개(6480+1600개, 119000원) : " + str(crs_5) + "개 (" + str(crm_5) + "원)\n"
     text+= "창세의 결정 3880개(3280+600개, 65000원) : " + str(crs_4) + "개 (" + str(crm_4) + "원)\n"
     text+= "창세의 결정 2240개(1980+260개, 37000원) : " + str(crs_3) + "개 (" + str(crm_3) + "원)\n"
