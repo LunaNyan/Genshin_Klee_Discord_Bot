@@ -49,7 +49,7 @@ def tos():
 def credits(client, bot_ver):
     embed=discord.Embed(title="원신 가챠 시뮬레이터 : 클레봇", color=0xffffff)
     embed.add_field(name="유용한 링크", value="[민원창구](https://discordapp.com/invite/6pgYMbC), [봇 초대하기](https://discord.com/oauth2/authorize?client_id=597782781673865216&scope=bot&permissions=0)", inline=False)
-    embed.add_field(name="총괄 관리자", value="libertin", inline=False)
+    embed.add_field(name="프로그래머", value="libertin", inline=False)
     embed.add_field(name="인프라 및 시스템 관리자", value="back-step\n라이젠쇼군", inline=False)
     embed.set_thumbnail(url=client.user.avatar_url)
     embed.set_footer(text=copyright_text + " | ver " + bot_ver)

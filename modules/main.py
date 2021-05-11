@@ -1,4 +1,4 @@
-import sys, os, discord, configparser, logging, traceback, time, random
+import sys, os, discord, configparser, logging, traceback, time, random, math
 import m_gacha_pull, m_help, m_estimate, m_search, m_etc
 from datetime import datetime
 sys.path.append('../gacha_data/')
@@ -6,7 +6,7 @@ import pickup_character, pickup_weapon, anytime
 sys.path.append('../')
 
 global bot_ver
-bot_ver = "EarlyAccess-210407a"
+bot_ver = "0.90"
 
 print("INFO    : Klee Discord bot, version " + bot_ver)
 print("INFO    : Pickup character data : " + pickup_character.data_name + " (ver " + pickup_character.data_ver + ")")
@@ -46,6 +46,7 @@ async def on_ready():
 async def on_message(message):
     try:
         if message.author == client.user:
+            # !! 이 코드는 항상 최상단에 둘것 !!
             return
         if not db.has_section(str(message.author.id)):
             # db에 해당 유저 섹션이 없는 경우 structure initialize 처리
@@ -117,6 +118,13 @@ async def on_message(message):
         elif message.content == "!단차" or message.content == "!단챠":
             resc = m_gacha_pull.descript_pull(m_gacha_pull.pull(db, message))
             embed = discord.Embed(title=str(m_gacha_pull.get_stat(db, message)[0]) + "회차 : " + resc)
+            if db.get(str(message.author.id), "gacha_mode") == "1":
+                f_text = "현재 기원 : 캐릭터 픽업"
+            elif db.get(str(message.author.id), "gacha_mode") == "2":
+                f_text = "현재 기원 : 무기 픽업"
+            else:
+                f_text = "현재 기원 : 상시 기원"
+            embed.set_footer(text=f_text)
             await message.channel.send(embed=embed)
         elif message.content == "!연차" or message.content == "!연챠":
             await message.channel.trigger_typing()
@@ -127,11 +135,18 @@ async def on_message(message):
                 resc = m_gacha_pull.descript_pull(resi)
                 if resi[0] == 5:
                     encountered_5star = True
-                rest += str(m_gacha_pull.get_stat(db, message)[0]) + "회차 : " + resc + "\n"
+                rest += str(m_gacha_pull.get_stat(db, message)[0]) + "회차 : " + resc + "\r\n"
             if encountered_5star:
                 embed = discord.Embed(title="10연차 결과", description=rest, color=0xffff00)
             else:
                 embed = discord.Embed(title="10연차 결과", description=rest, color=0x9933ff)
+            if db.get(str(message.author.id), "gacha_mode") == "1":
+                f_text = "현재 기원 : 캐릭터 픽업"
+            elif db.get(str(message.author.id), "gacha_mode") == "2":
+                f_text = "현재 기원 : 무기 픽업"
+            else:
+                f_text = "현재 기원 : 상시 기원"
+            embed.set_footer(text=f_text)
             await message.channel.send(embed=embed)
         elif message.content == "!5성" or message.content == "!반천장":
             if autoreset == "1":
@@ -144,7 +159,7 @@ async def on_message(message):
                     raise ArithmeticError("루프가 허용 한도를 초과했습니다.")
                 resi = m_gacha_pull.pull(db, message)
                 resc = m_gacha_pull.descript_pull(resi)
-                rest += str(m_gacha_pull.get_stat(db, message)[0]) + "회차 : " + resc + "\n"
+                rest += str(m_gacha_pull.get_stat(db, message)[0]) + "회차 : " + resc + "\r\n"
                 tries += 1
                 if resi[0] == 5:
                     break
@@ -153,6 +168,15 @@ async def on_message(message):
             pf.write(rest)
             pf.close()
             embed=discord.Embed(title=str(m_gacha_pull.get_stat(db, message)[0]) + "회차에 " + resi[2] + "이(가) 뽑혔어!", description="상세 과정은 파일을 참조해줘!", color=0xffff00)
+            if db.get(str(message.author.id), "gacha_mode") == "1":
+                f_text = "현재 기원 : 캐릭터 픽업"
+            elif db.get(str(message.author.id), "gacha_mode") == "2":
+                f_text = "현재 기원 : 무기 픽업"
+            else:
+                f_text = "현재 기원 : 상시 기원"
+            if autoreset == "1":
+                f_text += ", 자동 리셋 켜짐"
+            embed.set_footer(text=f_text)
             await message.channel.send(embed=embed)
             await message.channel.send(file=discord.File(fn))
             os.remove(fn)
@@ -162,21 +186,35 @@ async def on_message(message):
             if db.get(str(message.author.id), "gacha_mode") != "3":
                 await message.channel.trigger_typing()
                 rest = ""
+                resp = None
+                resp_c = None
                 tries = 0
                 while True:
                     if tries >= 180:
                         raise ArithmeticError("루프가 허용 한도를 초과했습니다.")
                     resi = m_gacha_pull.pull(db, message)
                     resc = m_gacha_pull.descript_pull(resi)
-                    rest += str(m_gacha_pull.get_stat(db, message)[0]) + "회차 : " + resc + "\n"
+                    rest += str(m_gacha_pull.get_stat(db, message)[0]) + "회차 : " + resc + "\r\n"
                     tries += 1
                     if resi[0] == 5 and resi[3]:
                         break
+                    elif resi[0] == 5 and not resi[3]:
+                        resp = resi
+                        resp_c = str(m_gacha_pull.get_stat(db, message)[0])
                 fn = "result_" + str(int(time.time())) + "_" + str(random.randint(1000, 9999)) + ".txt"
                 pf = open(fn, "w")
                 pf.write(rest)
                 pf.close()
                 embed=discord.Embed(title=str(m_gacha_pull.get_stat(db, message)[0]) + "회차에 " + resi[2] + "이(가) 뽑혔어!", description="상세 과정은 파일을 참조해줘!", color=0xffff00)
+                if resp != None:
+                    embed.add_field(name="비 픽업(픽뚫) 5성 항목", value="#" + resp_c + " : " + resp[2])
+                if db.get(str(message.author.id), "gacha_mode") == "1":
+                    f_text = "현재 기원 : 캐릭터 픽업"
+                else:
+                    f_text = "현재 기원 : 무기 픽업"
+                if autoreset == "1":
+                    f_text += ", 자동 리셋 켜짐"
+                embed.set_footer(text=f_text)
                 await message.channel.send(embed=embed)
                 await message.channel.send(file=discord.File(fn))
                 os.remove(fn)
@@ -230,61 +268,88 @@ async def on_message(message):
                         embed=discord.Embed(title="사용 방법 : !견적 (보유중인 원석 개수) / !견적")
             await message.channel.send(embed=embed)
         elif message.content.startswith("!저격"):
-            m = message.content.replace("!저격 ", "")
-            if m_search.search(db, message, m):
-                await message.channel.trigger_typing()
-                rest = ""
-                while True:
-                    resi = m_gacha_pull.pull(db, message)
-                    resc = m_gacha_pull.descript_pull(resi)
-                    rest += str(m_gacha_pull.get_stat(db, message)[0]) + "회차 : " + resc + "\n"
-                    if resi[0] == 5 and resi[2] == m:
-                        break
-                fn = "result_" + str(int(time.time())) + "_" + str(random.randint(1000, 9999)) + ".txt"
-                pf = open(fn, "w")
-                pf.write(rest)
-                pf.close()
-                embed=discord.Embed(title=str(m_gacha_pull.get_stat(db, message)[0]) + "회차에 " + resi[2] + "이(가) 뽑혔어!", description="상세 과정은 파일을 참조해줘!", color=0xffff00)
+            if message.content == "!저격":
+                embed=discord.Embed(title="사용 방법 : !저격 (항목 이름)")
                 await message.channel.send(embed=embed)
-                await message.channel.send(file=discord.File(fn))
-                os.remove(fn)
             else:
-                embed = discord.Embed(title="어떤 항목이었더라? 클레는 모르겠어...")
-                await message.channel.send(embed=embed)
-        elif message.content.startswith("!풀돌"):
-            m = message.content.replace("!풀돌 ", "")
-            if m_search.search(db, message, m):
-                await message.channel.trigger_typing()
-                ix = 0
-                rest = ""
-                tries = 0
-                while True:
-                    if tries >= 8192:
-                        raise ArithmeticError("루프가 허용 한도를 초과했습니다.")
-                    tries += 1
-                    resi = m_gacha_pull.pull(db, message)
-                    resc = m_gacha_pull.descript_pull(resi)
-                    rest += str(m_gacha_pull.get_stat(db, message)[0]) + "회차 : " + resc + "\n"
-                    if resi[0] == 5 and resi[2] == m:
-                        ix += 1
-                        if ix >= 7:
+                m = message.content.replace("!저격 ", "")
+                if m == "클레" and not m_search.search(db, message, m):
+                    embed = discord.Embed(title="클레는 나가 놀고 싶어~ 함께 밖에 나가 놀아줘~")
+                    await message.channel.send(embed=embed)
+                elif m_search.search(db, message, m):
+                    await message.channel.trigger_typing()
+                    rest = ""
+                    tries = 0
+                    while True:
+                        if tries >= 8192:
+                            raise ArithmeticError("루프가 허용 한도를 초과했습니다.")
+                        tries += 1
+                        resi = m_gacha_pull.pull(db, message)
+                        resc = m_gacha_pull.descript_pull(resi)
+                        rest += str(m_gacha_pull.get_stat(db, message)[0]) + "회차 : " + resc + "\r\n"
+                        if resi[0] == 5 and resi[2] == m:
                             break
-                fn = "result_" + str(int(time.time())) + "_" + str(random.randint(1000, 9999)) + ".txt"
-                pf = open(fn, "w")
-                pf.write(rest)
-                pf.close()
-                embed=discord.Embed(title=str(m_gacha_pull.get_stat(db, message)[0]) + "회차를 끝으로 풀돌을 성공했어!", description="상세 과정은 파일을 참조해줘!", color=0xffff00)
+                    fn = "result_" + str(int(time.time())) + "_" + str(random.randint(1000, 9999)) + ".txt"
+                    pf = open(fn, "w")
+                    pf.write(rest)
+                    pf.close()
+                    embed=discord.Embed(title=str(m_gacha_pull.get_stat(db, message)[0]) + "회차에 " + resi[2] + "이(가) 뽑혔어!", description="상세 과정은 파일을 참조해줘!", color=0xffff00)
+                    await message.channel.send(embed=embed)
+                    await message.channel.send(file=discord.File(fn))
+                    os.remove(fn)
+                else:
+                    embed = discord.Embed(title="어떤 항목이었더라? 클레는 모르겠어...")
+                    await message.channel.send(embed=embed)
+        elif message.content.startswith("!풀돌"):
+            if message.content == "!풀돌":
+                embed=discord.Embed(title="사용 방법 : !풀돌 (항목 이름)")
                 await message.channel.send(embed=embed)
-                await message.channel.send(file=discord.File(fn))
-                os.remove(fn)
             else:
-                embed = discord.Embed(title="어떤 항목이었더라? 클레는 모르겠어...")
-                await message.channel.send(embed=embed)
-        elif message.content == "test_traceback":
-            i = 42 / 0
+                m = message.content.replace("!풀돌 ", "")
+                if m == "클레" and not m_search.search(db, message, m):
+                    embed = discord.Embed(title="클레는 나가 놀고 싶어~ 함께 밖에 나가 놀아줘~")
+                    await message.channel.send(embed=embed)
+                elif m_search.search(db, message, m):
+                    await message.channel.trigger_typing()
+                    ix = 0
+                    rest = ""
+                    tries = 0
+                    while True:
+                        if tries >= 8192:
+                            raise ArithmeticError("루프가 허용 한도를 초과했습니다.")
+                        tries += 1
+                        resi = m_gacha_pull.pull(db, message)
+                        resc = m_gacha_pull.descript_pull(resi)
+                        rest += str(m_gacha_pull.get_stat(db, message)[0]) + "회차 : " + resc + "\r\n"
+                        if resi[0] == 5 and resi[2] == m:
+                            ix += 1
+                            if ix >= 7:
+                                break
+                    fn = "result_" + str(int(time.time())) + "_" + str(random.randint(1000, 9999)) + ".txt"
+                    pf = open(fn, "w")
+                    pf.write(rest)
+                    pf.close()
+                    embed=discord.Embed(title=str(m_gacha_pull.get_stat(db, message)[0]) + "회차를 끝으로 풀돌을 성공했어!", description="상세 과정은 파일을 참조해줘!", color=0xffff00)
+                    await message.channel.send(embed=embed)
+                    await message.channel.send(file=discord.File(fn))
+                    os.remove(fn)
+                else:
+                    embed = discord.Embed(title="어떤 항목이었더라? 클레는 모르겠어...")
+                    await message.channel.send(embed=embed)
+        elif message.author.id == int(conf.get("config", "admin_id")):
+            if message.content == "test_traceback":
+                i = 42 / 0
+            elif message.content == "get_guild_count":
+                await message.channel.send(str(len(client.guilds)) + " guilds")
+        else:
+            return # 코드 정지, 명령어를 사용하지 않았으므로 공지사항 업로드 채널을 지정하지 않음
+        try:
+            db.set("announcement_channel", str(message.guild.id), str(message.channel.id))
+        except:
+            pass
     except Exception as e:
         if "Missing Permissions" in str(e):
-            embed=discord.Embed(title="뭔가 잘못되었나 봐!", description='권한이 부족합니다. "링크 첨부"와 "파일 첨부" 권한을 활성화해주세요.')
+            await message.channel.send('권한이 부족합니다. "링크 첨부"와 "파일 첨부" 권한을 활성화해주세요.')
         else:
             embed=discord.Embed(title="뭔가 잘못되었나 봐!", description="오류 내용 : " + str(e) + "\n클레가 오류 보고서를 전송해 놨으니까 곧 고쳐질거야!")
             await message.channel.send(embed=embed)

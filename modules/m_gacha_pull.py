@@ -74,8 +74,11 @@ def get_star(db, message, data, stack_huddle, stack_nothope): # 데이터, 데�
     else:
         # 데이터 B 항목 반환, 반천장을 마킹해놓음
         res = [random.choice(data[1]), 1]
-        if res[0][0] == 5:
-            db.set(str(message.author.id), "total_nothope_" + db.get(str(message.author.id), "gacha_mode"), str(int(db.get(str(message.author.id), "total_nothope_" + db.get(str(message.author.id), "gacha_mode"))) + 1)) # 통계 픽뚫 횟수 증가
+        try:
+            if res[0][0] == 5:
+                db.set(str(message.author.id), "total_nothope_" + db.get(str(message.author.id), "gacha_mode"), str(int(db.get(str(message.author.id), "total_nothope_" + db.get(str(message.author.id), "gacha_mode"))) + 1)) # 통계 픽뚫 횟수 증가
+        except:
+            pass
         return res
 
 def pull_calc(db, message, gacha_data, stack_5star_pull, stack_4star_pull, stack_5star_nothope, stack_4star_nothope):

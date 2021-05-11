@@ -9,7 +9,7 @@ if __name__=="__main__":
     sys.exit(1)
 
 data_name = "세상 여행"
-data_ver = "2021031501"
+data_ver = "2021042801"
 
 # 5성 캐릭터 항목
 l_5star_char = [
@@ -36,6 +36,7 @@ l_5star_item = [
 
 # 4성 캐릭터 항목
 l_4star_char = [
+                [4, 'character', '로자리아'],
                 [4, 'character', '신염'],
                 [4, 'character', '설탕'],
                 [4, 'character', '디오나'],
